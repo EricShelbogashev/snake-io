@@ -1,5 +1,6 @@
 package view
 
+import GameSettings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -43,7 +44,7 @@ fun GameView(gameConfig: GameConfig) {
     val coroutineScope = rememberCoroutineScope()
     coroutineScope.launch(Dispatchers.IO) {
         while (true) {
-            Thread.sleep(1000)
+            Thread.sleep(3000)
             val list = playersState.value.toMutableList()
             list.shuffle()
             playersState.value = list.toTypedArray()
@@ -66,25 +67,30 @@ fun GameView(gameConfig: GameConfig) {
         Column(modifier = gameInfoColumnModifier) {
             Logo(generalComponentsModifier)
 
-            Rating(
-                generalComponentsModifier,
-                gameConfig.playerName,
-                players = playersState.value
-            )
+            Column(
+                Modifier.fillMaxHeight(0.9f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Rating(
+                    generalComponentsModifier,
+                    gameConfig.playerName,
+                    players = playersState.value
+                )
 
-            Stats(
-                generalComponentsModifier,
-                gameConfig.height,
-                gameConfig.width,
-                gameConfig.foodStatic,
-                gameConfig.stateDelayMs
-            )
+                Stats(
+                    generalComponentsModifier,
+                    gameConfig.height,
+                    gameConfig.width,
+                    gameConfig.foodStatic,
+                    gameConfig.stateDelayMs
+                )
+            }
         }
 
         // Column with game field.
         val gameFieldColumnModifier = generalColumnModifier
             .weight(.6f)
-            .background(Color(240,240,240))
+            .background(Color(240, 240, 240))
 
         Column(
             modifier = gameFieldColumnModifier,
@@ -99,7 +105,15 @@ fun GameView(gameConfig: GameConfig) {
             .weight(.2f)
             .background(Color.White)
         Column(modifier = gameSettingsColumnModifier) {
-
+            Column(
+                Modifier.fillMaxHeight(0.9f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                GameSettings(
+                    modifier = generalComponentsModifier,
+                    action = { selected, isChecked -> println("$selected, $isChecked") }
+                )
+            }
         }
     }
 }

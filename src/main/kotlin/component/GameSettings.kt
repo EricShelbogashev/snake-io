@@ -1,13 +1,13 @@
-package component
-
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import res.Font
 
 enum class GameOption {
     OPPONENTS_FADED_COLORS,
@@ -16,37 +16,48 @@ enum class GameOption {
 
 @Composable
 fun GameSettings(
-    action: (GameOption, Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    action: (selected: GameOption, isChecked: Boolean) -> Unit
 ) {
     Column(modifier) {
-        Text("Текущая игра", style = MaterialTheme.typography.h4)
-        Column {
-            val opponentsFadedColorsCheckedState = remember { mutableStateOf(true) }
-            Row {
-                Text("Блеклые цвета для соперников")
-                Switch(opponentsFadedColorsCheckedState.value, {checked ->
-                    opponentsFadedColorsCheckedState.value = checked
-                    action(GameOption.OPPONENTS_FADED_COLORS, checked)
-                    checked != checked
-                })
+        Text("Настройки игры", style = Font.snakeIOTypography.h4)
+        OptionRow(
+            label = "Блеклые цвета оппонентов",
+            isChecked = true,
+            onCheckedChange = { checked ->
+                action(GameOption.OPPONENTS_FADED_COLORS, checked)
             }
-            val expandedInformationAboutParticipantsCheckedState = remember { mutableStateOf(false) }
-            Row {
-                Text("Расширенная информация об участниках")
-                Switch(expandedInformationAboutParticipantsCheckedState.value, {checked ->
-                    expandedInformationAboutParticipantsCheckedState.value = checked
-                    action(GameOption.EXPANDED_INFORMATION_ABOUT_PARTICIPANTS, checked)
-                })
+        )
+        OptionRow(
+            label = "Расширенная информация об участниках",
+            isChecked = false,
+            onCheckedChange = { checked ->
+                action(GameOption.EXPANDED_INFORMATION_ABOUT_PARTICIPANTS, checked)
             }
-        }
+        )
     }
 }
 
-@Preview
 @Composable
-private fun PreviewGameSettings() {
-    GameSettings({ option: GameOption, enable: Boolean ->
-        println("${option.name} -> $enable")
-    })
+fun OptionRow(
+    label: String,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    var checkedState by remember { mutableStateOf(isChecked) }
+
+    Row(
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+        Text(label, modifier = Modifier.weight(1f))
+        Switch(
+            checked = checkedState,
+            onCheckedChange = { checked ->
+                checkedState = checked
+                onCheckedChange(checked)
+            },
+            modifier = Modifier.padding(start = 8.dp)
+        )
+    }
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import res.Font
 import res.GameIcon
 
 @Composable
@@ -40,7 +41,7 @@ fun Chip(
             Text(
                 modifier = Modifier.padding(start = 4.dp).align(Alignment.CenterVertically),
                 text = text,
-                style = MaterialTheme.typography.button
+                style = Font.snakeIOTypography.button
             )
         }
     }
