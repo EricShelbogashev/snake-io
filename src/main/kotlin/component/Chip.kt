@@ -27,8 +27,8 @@ fun Chip(
     Card(
         modifier,
         elevation = 0.dp,
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(2.dp, Color.Gray)
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(2.dp, Color.Black)
     ) {
         val padding = 4.dp
         Row(Modifier.padding(end = padding, start = padding, top = padding / 2, bottom = padding / 2)) {
