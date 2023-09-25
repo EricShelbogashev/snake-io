@@ -20,6 +20,7 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation("ru.nsu.shelbogashev:snake-io-core:1.0-SNAPSHOT")
 }
 
 compose.desktop {
@@ -30,6 +31,16 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "snake-io"
             packageVersion = "1.0.0"
+        }
+    }
+}
+
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/EricShelbogashev/snake-io-core")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
         }
     }
 }
