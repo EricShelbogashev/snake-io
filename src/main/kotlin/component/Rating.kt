@@ -1,6 +1,5 @@
 package component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +20,7 @@ import res.Font.snakeIOTypography
 @Composable
 fun Rating(
     modifier: Modifier = Modifier,
+    selfName: String,
     players: Array<Player>
 ) {
     Column(modifier) {
@@ -34,7 +34,7 @@ fun Rating(
                 modifier = Modifier.padding(4.dp),
                 content = {
                     items(players) { player ->
-                        PlayerRatingItem(player)
+                        PlayerRatingItem(player, selfName)
                     }
                 }
             )
@@ -43,9 +43,9 @@ fun Rating(
 }
 
 @Composable
-fun PlayerRatingItem(player: Player) {
-    val isDasha = player.name == "dasha"
-    if (isDasha) {
+fun PlayerRatingItem(player: Player, selfName: String) {
+    val isMe = player.name == selfName
+    if (isMe) {
         Card(
             backgroundColor = Color.LightGray,
             elevation = 0.dp,

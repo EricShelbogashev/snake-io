@@ -31,7 +31,7 @@ fun GameView(gameConfig: GameConfig) {
             arrayOf(
                 Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 96, "192.154.34.34", "petya", 33),
                 Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 21, "192.154.34.34", "petya", 33),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 23, "192.154.34.34", "sonya", 32),
+                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 23, "192.154.34.34", "Petya", 32),
                 Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 47, "192.154.34.34", "sonya", 65),
                 Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 76, "192.154.34.34", "sonya", 25),
                 Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 3, "192.154.34.34", "sonya", 55),
@@ -68,6 +68,7 @@ fun GameView(gameConfig: GameConfig) {
 
             Rating(
                 generalComponentsModifier,
+                gameConfig.playerName,
                 players = playersState.value
             )
 
