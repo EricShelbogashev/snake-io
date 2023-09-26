@@ -155,7 +155,7 @@ object Font {
         ),
         button = TextStyle(
             fontFamily = montserrat,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Medium,
             fontSize = 14.sp
         ),
         caption = TextStyle(

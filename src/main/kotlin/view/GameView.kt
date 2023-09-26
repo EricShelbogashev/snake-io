@@ -103,7 +103,6 @@ fun GameView(gameConfig: GameConfig) {
         // Column with game settings.
         val gameSettingsColumnModifier = generalColumnModifier
             .weight(.2f)
-            .background(Color.White)
         Column(modifier = gameSettingsColumnModifier) {
             Column(
                 Modifier.fillMaxHeight(0.9f),

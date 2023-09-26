@@ -37,7 +37,7 @@ fun Stats(
         Text("Текущая игра", style = snakeIOTypography.h4)
         LazyVerticalGrid(
             columns = GridCells.Adaptive(115.dp),
-            contentPadding = PaddingValues(2.dp, 4.dp, 2.dp, 4.dp),
+            contentPadding = PaddingValues(0.dp, 4.dp, 0.dp, 4.dp),
             content = {
                 items(statItems) { item ->
                     StatChip(item.icon, item.label, item.value, Modifier.padding(contentPadding))

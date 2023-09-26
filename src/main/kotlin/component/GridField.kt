@@ -27,7 +27,7 @@ fun GridField(
         columns = GridCells.Fixed(gameConfig.width),
     ) {
         items(gameConfig.height * gameConfig.width) { index ->
-            val random = Random(index).nextInt(20..230)
+            val random = Random(index).nextInt(220..230)
             Card(
                 backgroundColor = Color(
                     random,

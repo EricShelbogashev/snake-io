@@ -1,87 +1,116 @@
 package component
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import res.Font
 import res.GameIcon
 import java.net.InetSocketAddress
 import java.net.SocketAddress
 
 @Composable
 fun GameItem(
+    modifier: Modifier = Modifier,
     username: String,
     address: InetSocketAddress,
     width: Int,
     height: Int,
     foodStatic: Int,
     alive: Int,
+    canJoin: Boolean,
+    background: Color = Color.White,
     onView: (address: SocketAddress) -> Unit,
-    onJoin: (address: SocketAddress) -> Unit,
-    modifier: Modifier = Modifier
+    onJoin: (address: SocketAddress) -> Unit
 ) {
-    val usernameWeight = .3f
-    val addressWeight = .3f
-    val sizeWeight = .1f
-    val formulaWeight = .1f
-    val buttonsWeight = .2f
-    Card(modifier = modifier) {
-        val textStyle = MaterialTheme.typography.body1
-        val padding = 4.dp
-        Row {
+    Card(
+        modifier = modifier
+            .padding(start = 6.dp, end = 6.dp)
+            .fillMaxWidth(),
+        elevation = 0.dp,
+        backgroundColor = background,
+        shape = RoundedCornerShape(12.dp),
+    ) {
+        val textStyle = Font.snakeIOTypography.body1
+        val padding = 8.dp
+
+        Row(Modifier.padding(start = padding, end = padding, top = padding, bottom = padding)) {
+            // Username
             Text(
                 text = username,
-                modifier = Modifier.weight(usernameWeight).align(Alignment.CenterVertically).padding(padding),
+                modifier = Modifier
+                    .weight(0.3f)
+                    .align(Alignment.CenterVertically),
                 style = textStyle
             )
+
+            // Address
             Text(
                 text = "${address.hostName}:${address.port}",
-                modifier = Modifier.weight(addressWeight).align(Alignment.CenterVertically).padding(padding),
+                modifier = Modifier
+                    .weight(0.3f)
+                    .align(Alignment.CenterVertically),
                 style = textStyle
             )
+
+            // Size
             Text(
                 text = "${width}x${height}",
-                modifier = Modifier.weight(sizeWeight).align(Alignment.CenterVertically).padding(padding),
+                modifier = Modifier
+                    .weight(0.1f)
+                    .align(Alignment.CenterVertically),
                 style = textStyle
             )
+
+            // Formula
             Text(
                 text = "${alive}x + $foodStatic",
-                modifier = Modifier.weight(formulaWeight).align(Alignment.CenterVertically).padding(padding),
+                modifier = Modifier
+                    .weight(0.1f)
+                    .align(Alignment.CenterVertically),
                 style = textStyle
             )
-            Box(Modifier.weight(buttonsWeight).padding(padding)) {
-                Row(Modifier.align(Alignment.CenterEnd)) {
+
+            // Buttons
+            Box(
+                modifier = Modifier
+                    .weight(0.2f)
+            ) {
+                Row(
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
                     IconButton(
                         onClick = { onView(address) },
                         modifier = Modifier.align(Alignment.CenterVertically),
-                    ) {
-                        Icon(
-                            painter = GameIcon.JOIN_GAME.painter(),
-                            contentDescription = "join the game button"
-                        )
-                    }
-                    IconButton(
-                        onClick = { onJoin(address) },
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        enabled = canJoin
                     ) {
                         Icon(
                             painter = GameIcon.VIEW_GAME.painter(),
                             contentDescription = "watch the game button"
                         )
                     }
+                    IconButton(
+                        onClick = { onJoin(address) },
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        enabled = canJoin
+                    ) {
+                        Icon(
+                            painter = GameIcon.JOIN_GAME.painter(),
+                            contentDescription = "join the game button"
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun PreviewStats() {
-    GameItem("Виктор", InetSocketAddress(2233), 30, 20, 3, 4, { println("on view") }, { println("on join") })
 }
