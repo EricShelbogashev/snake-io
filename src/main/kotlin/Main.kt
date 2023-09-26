@@ -12,9 +12,9 @@ fun main() = application {
         title = "SnakeGame",
         state = rememberWindowState(width = 1200.dp, height = 680.dp)
     ) {
-//        GameView(
-//            GameConfig("Some game", "Petya", 33, 22, 4, 300)
-//        )
-        LobbyView()
+        GameView(
+            GameConfig("Some game", "Petya", 33, 22, 4, 300)
+        )
+//        LobbyView()
     }
 }

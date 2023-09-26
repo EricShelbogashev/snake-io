@@ -14,10 +14,7 @@ import androidx.compose.ui.unit.dp
 import api.v1.dto.NodeRole
 import api.v1.dto.Player
 import api.v1.dto.PlayerType
-import component.GridField
-import component.Logo
-import component.Rating
-import component.Stats
+import component.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import model.GameConfig
@@ -104,6 +101,10 @@ fun GameView(gameConfig: GameConfig) {
         val gameSettingsColumnModifier = generalColumnModifier
             .weight(.2f)
         Column(modifier = gameSettingsColumnModifier) {
+            GameLeaveButton(
+                generalComponentsModifier,
+                { println("game leave button clicked") }
+            )
             Column(
                 Modifier.fillMaxHeight(0.9f),
                 verticalArrangement = Arrangement.Center
