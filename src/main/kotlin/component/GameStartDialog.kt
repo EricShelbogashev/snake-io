@@ -3,6 +3,7 @@ package component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.OutlinedTextField
@@ -41,195 +42,197 @@ fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameCon
 
     AlertDialog(onDismissRequest = {
         openDialog.value = false
-    }, title = {
-        Text(text = "Новая игра", style = Font.snakeIOTypography.h4)
-    }, text = {
-        Column {
-            val padding = 6.dp
-            val itemModifier = Modifier.padding(padding)
+    },
+        shape = RoundedCornerShape(12.dp),
+        title = {
+            Text(text = "Новая игра", style = Font.snakeIOTypography.h4)
+        }, text = {
+            Column {
+                val padding = 6.dp
+                val itemModifier = Modifier.padding(padding)
 //                GameConfig(gameName = , playerName = , width = , height = , foodStatic = , stateDelayMs = )
-            Row {
-                OutlinedTextField(
-                    label = {
+                Row {
+                    OutlinedTextField(
+                        label = {
+                            Text(
+                                if (!gameNameError) {
+                                    "Название игры"
+                                } else {
+                                    "Не меньше 3 символов"
+                                }
+                            )
+                        },
+                        value = gameNameText,
+                        onValueChange = { it: String ->
+                            gameNameError = it.length in 1..3
+                            gameNameText = it
+                        },
+                        modifier = itemModifier,
+                        placeholder = { Text(defaultGameName, style = Font.snakeIOTypography.overline) },
+                        textStyle = Font.snakeIOTypography.body1,
+                        isError = gameNameError
+                    )
+                    OutlinedTextField(label = {
                         Text(
-                            if (!gameNameError) {
-                                "Название игры"
+                            if (!playerNameError) {
+                                "Имя игрока"
                             } else {
                                 "Не меньше 3 символов"
                             }
                         )
-                    },
-                    value = gameNameText,
-                    onValueChange = { it: String ->
-                        gameNameError = it.length in 1..3
-                        gameNameText = it
-                    },
-                    modifier = itemModifier,
-                    placeholder = { Text(defaultGameName, style = Font.snakeIOTypography.overline) },
-                    textStyle = Font.snakeIOTypography.body1,
-                    isError = gameNameError
-                )
-                OutlinedTextField(label = {
-                    Text(
-                        if (!playerNameError) {
-                            "Имя игрока"
-                        } else {
-                            "Не меньше 3 символов"
-                        }
+                    }, value = playerNameText, onValueChange = {
+                        playerNameError = it.length in 1..3
+                        playerNameText = it
+                    }, modifier = itemModifier, placeholder = {
+                        Text(
+                            text = defaultPlayerName, style = Font.snakeIOTypography.caption
+                        )
+                    }, isError = playerNameError, textStyle = Font.snakeIOTypography.body1
                     )
-                }, value = playerNameText, onValueChange = {
-                    playerNameError = it.length in 1..3
-                    playerNameText = it
-                }, modifier = itemModifier, placeholder = {
-                    Text(
-                        text = defaultPlayerName, style = Font.snakeIOTypography.caption
-                    )
-                }, isError = playerNameError, textStyle = Font.snakeIOTypography.body1
-                )
-            }
-            Row {
-                OutlinedTextField(label = {
-                    Text(
-                        if (!heightError) {
-                            "Высота поля"
-                        } else {
-                            "От 10 до 100"
-                        }
-                    )
-                }, value = heightText, onValueChange = {
-                    heightError = try {
-                        val v = it.trim().toInt()
-                        v !in 10..100
-                    } catch (e: Exception) {
-                        true
-                    }
-                    heightText = it
-                }, modifier = itemModifier, placeholder = {
-                    Text(
-                        text = GameConfig.Defaults.height().toString(), style = Font.snakeIOTypography.overline
-                    )
-                }, isError = heightError, textStyle = Font.snakeIOTypography.body1
-                )
-                OutlinedTextField(label = {
-                    Text(
-                        if (!widthError) {
-                            "Ширина поля"
-                        } else {
-                            "От 10 до 100"
-                        }
-                    )
-                }, isError = widthError, value = widthText, onValueChange = {
-                    widthError = try {
-                        val v = it.trim().toInt()
-                        v !in 10..100
-                    } catch (e: Exception) {
-                        true
-                    }
-                    widthText = it
-                }, placeholder = {
-                    Text(
-                        text = GameConfig.Defaults.width().toString(), style = Font.snakeIOTypography.caption
-                    )
-                }, modifier = itemModifier, textStyle = Font.snakeIOTypography.body1
-                )
-            }
-            Row {
-                OutlinedTextField(label = {
-                    Text(
-                        if (!foodStaticError) {
-                            "Количество постоянной еды"
-                        } else {
-                            "От 1 до ${
-                                try {
-                                    heightText.toInt() * widthText.toInt()
-                                } catch (e: Exception) {
-                                    "98"
-                                }
-                            }"
-                        }
-                    )
-                }, isError = foodStaticError, value = foodStaticText, onValueChange = {
-                    foodStaticError = try {
-                        val v = it.trim().toInt()
-                        v !in 1..try {
-                            heightText.toInt() * widthText.toInt()
+                }
+                Row {
+                    OutlinedTextField(label = {
+                        Text(
+                            if (!heightError) {
+                                "Высота поля"
+                            } else {
+                                "От 10 до 100"
+                            }
+                        )
+                    }, value = heightText, onValueChange = {
+                        heightError = try {
+                            val v = it.trim().toInt()
+                            v !in 10..100
                         } catch (e: Exception) {
-                            98
+                            true
                         }
-                    } catch (e: Exception) {
-                        true
-                    }
-                    foodStaticText = it
-                }, modifier = itemModifier, placeholder = {
-                    Text(
-                        text = GameConfig.Defaults.foodStatic().toString(),
-                        style = Font.snakeIOTypography.caption
+                        heightText = it
+                    }, modifier = itemModifier, placeholder = {
+                        Text(
+                            text = GameConfig.Defaults.height().toString(), style = Font.snakeIOTypography.overline
+                        )
+                    }, isError = heightError, textStyle = Font.snakeIOTypography.body1
                     )
-                }, textStyle = Font.snakeIOTypography.body1
-                )
-                OutlinedTextField(label = {
-                    Text(
-                        if (!delayError) {
-                            "Задержка шага (мс)"
-                        } else {
-                            "От 200 до 5000"
+                    OutlinedTextField(label = {
+                        Text(
+                            if (!widthError) {
+                                "Ширина поля"
+                            } else {
+                                "От 10 до 100"
+                            }
+                        )
+                    }, isError = widthError, value = widthText, onValueChange = {
+                        widthError = try {
+                            val v = it.trim().toInt()
+                            v !in 10..100
+                        } catch (e: Exception) {
+                            true
                         }
+                        widthText = it
+                    }, placeholder = {
+                        Text(
+                            text = GameConfig.Defaults.width().toString(), style = Font.snakeIOTypography.caption
+                        )
+                    }, modifier = itemModifier, textStyle = Font.snakeIOTypography.body1
                     )
-                }, placeholder = {
-                    Text(
-                        text = GameConfig.Defaults.stateDelayMs().toString(),
-                        style = Font.snakeIOTypography.caption
+                }
+                Row {
+                    OutlinedTextField(label = {
+                        Text(
+                            if (!foodStaticError) {
+                                "Количество постоянной еды"
+                            } else {
+                                "От 1 до ${
+                                    try {
+                                        heightText.toInt() * widthText.toInt()
+                                    } catch (e: Exception) {
+                                        "98"
+                                    }
+                                }"
+                            }
+                        )
+                    }, isError = foodStaticError, value = foodStaticText, onValueChange = {
+                        foodStaticError = try {
+                            val v = it.trim().toInt()
+                            v !in 1..try {
+                                heightText.toInt() * widthText.toInt()
+                            } catch (e: Exception) {
+                                98
+                            }
+                        } catch (e: Exception) {
+                            true
+                        }
+                        foodStaticText = it
+                    }, modifier = itemModifier, placeholder = {
+                        Text(
+                            text = GameConfig.Defaults.foodStatic().toString(),
+                            style = Font.snakeIOTypography.caption
+                        )
+                    }, textStyle = Font.snakeIOTypography.body1
                     )
-                }, isError = delayError, value = delayText, onValueChange = {
-                    delayError = try {
-                        val v = it.trim().toInt()
-                        v !in 200..5000
-                    } catch (e: Exception) {
-                        true
-                    }
-                    delayText = it
-                }, modifier = itemModifier, textStyle = Font.snakeIOTypography.body1
-                )
+                    OutlinedTextField(label = {
+                        Text(
+                            if (!delayError) {
+                                "Задержка шага (мс)"
+                            } else {
+                                "От 200 до 5000"
+                            }
+                        )
+                    }, placeholder = {
+                        Text(
+                            text = GameConfig.Defaults.stateDelayMs().toString(),
+                            style = Font.snakeIOTypography.caption
+                        )
+                    }, isError = delayError, value = delayText, onValueChange = {
+                        delayError = try {
+                            val v = it.trim().toInt()
+                            v !in 200..5000
+                        } catch (e: Exception) {
+                            true
+                        }
+                        delayText = it
+                    }, modifier = itemModifier, textStyle = Font.snakeIOTypography.body1
+                    )
+                }
             }
-        }
-    }, dismissButton = {
-        CancelButton {
-            openDialog.value = false
-        }
-    }, confirmButton = {
-        GameCreateButton {
-            if (gameNameText.isEmpty()) {
-                gameNameText = defaultGameName
+        }, dismissButton = {
+            CancelButton {
+                openDialog.value = false
             }
-            if (playerNameText.isEmpty()) {
-                playerNameText = defaultPlayerName
-            }
-            val width = if (widthText.isEmpty()) {
-                GameConfig.width()
-            } else {
-                widthText.trim().toInt()
-            }
-            val height = if (heightText.isEmpty()) {
-                GameConfig.height()
-            } else {
-                heightText.trim().toInt()
-            }
-            val foodStatic = if (foodStaticText.isEmpty()) {
-                GameConfig.foodStatic()
-            } else {
-                foodStaticText.trim().toInt()
-            }
-            val delay = if (delayText.isEmpty()) {
-                GameConfig.stateDelayMs()
-            } else {
-                delayText.trim().toInt()
-            }
+        }, confirmButton = {
+            GameCreateButton {
+                if (gameNameText.isEmpty()) {
+                    gameNameText = defaultGameName
+                }
+                if (playerNameText.isEmpty()) {
+                    playerNameText = defaultPlayerName
+                }
+                val width = if (widthText.isEmpty()) {
+                    GameConfig.width()
+                } else {
+                    widthText.trim().toInt()
+                }
+                val height = if (heightText.isEmpty()) {
+                    GameConfig.height()
+                } else {
+                    heightText.trim().toInt()
+                }
+                val foodStatic = if (foodStaticText.isEmpty()) {
+                    GameConfig.foodStatic()
+                } else {
+                    foodStaticText.trim().toInt()
+                }
+                val delay = if (delayText.isEmpty()) {
+                    GameConfig.stateDelayMs()
+                } else {
+                    delayText.trim().toInt()
+                }
 
-            newGame(
-                GameConfig(
-                    gameNameText, playerNameText, width, height, foodStatic, delay
+                newGame(
+                    GameConfig(
+                        gameNameText, playerNameText, width, height, foodStatic, delay
+                    )
                 )
-            )
-        }
-    })
+            }
+        })
 }

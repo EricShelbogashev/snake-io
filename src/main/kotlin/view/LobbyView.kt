@@ -7,14 +7,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import api.v1.dto.*
 import component.GameAnnouncementsList
 import component.GameStartButton
 import component.GameStartDialog
 import component.Logo
 import controller.LobbyController
 import model.GameConfig
-import java.net.InetSocketAddress
 
 @Composable
 fun LobbyView(lobbyController: LobbyController) {
@@ -57,21 +55,21 @@ fun LobbyView(lobbyController: LobbyController) {
             GameStartButton(generalComponentsModifier) {
                 openDialog.value = true
             }
+        }
 
-            // Column with game announcements.
-            val gameAnnouncementsColumnModifier = generalColumnModifier
-                .weight(.8f)
+        // Column with game announcements.
+        val gameAnnouncementsColumnModifier = generalColumnModifier
+            .weight(.8f)
 
-            Column(
-                modifier = gameAnnouncementsColumnModifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                GameAnnouncementsList(
-                    modifier = generalComponentsModifier,
-                    announcements = mutableListOf()
-                )
-            }
+        Column(
+            modifier = gameAnnouncementsColumnModifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            GameAnnouncementsList(
+                modifier = generalComponentsModifier,
+                announcements = mutableListOf()
+            )
         }
     }
 }

@@ -1,11 +1,12 @@
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Cyan
+import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.unit.dp
 import res.Font
 
@@ -52,6 +53,10 @@ fun OptionRow(
     ) {
         Text(label, modifier = Modifier.weight(1f))
         Switch(
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Black,
+                checkedTrackColor = Black,
+            ),
             checked = checkedState,
             onCheckedChange = { checked ->
                 checkedState = checked

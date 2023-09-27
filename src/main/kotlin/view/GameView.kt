@@ -24,13 +24,13 @@ fun GameView(gameController: GameController) {
     val modifier = Modifier.fillMaxSize()
     val playersState = remember { mutableStateOf(arrayOf<Player>()) }
 
-
+    val fadedColorsEnable = remember { mutableStateOf(true) }
     val cells = remember { mutableStateOf(mutableMapOf<Int, Color>()) }
     gameController.setOnGameStateChangeListener { state: GameState ->
         val cellsTmp = mutableMapOf<Int, Color>()
         state.snakes.forEach { snake ->
             snake.points.forEach { coords ->
-                cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(snake.playerId)
+                cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(fadedColorsEnable.value && config.myPlayerId != snake.playerId, snake.playerId)
             }
         }
         state.food.forEach { food ->
@@ -63,6 +63,7 @@ fun GameView(gameController: GameController) {
 
         // Column with game information.
         val gameInfoColumnModifier = generalColumnModifier.weight(.2f)
+        val expandedInfoEnable = remember { mutableStateOf(false) }
 
         Column(modifier = gameInfoColumnModifier) {
             Logo(generalComponentsModifier)
@@ -71,7 +72,7 @@ fun GameView(gameController: GameController) {
                 Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
             ) {
                 Rating(
-                    generalComponentsModifier, config.playerName, players = playersState.value
+                    generalComponentsModifier, config.playerName, players = playersState.value, expandedInfoEnable.value
                 )
 
                 Stats(
@@ -101,7 +102,16 @@ fun GameView(gameController: GameController) {
                 Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
             ) {
                 GameSettings(modifier = generalComponentsModifier,
-                    action = { selected, isChecked -> println("$selected, $isChecked") })
+                    action = { selected, isChecked ->
+                        when (selected) {
+                            GameOption.EXPANDED_INFORMATION_ABOUT_PARTICIPANTS -> {
+                                expandedInfoEnable.value = isChecked
+                            }
+                            GameOption.OPPONENTS_FADED_COLORS -> {
+                                fadedColorsEnable.value = isChecked
+                            }
+                        }
+                    })
             }
         }
     }
@@ -126,9 +136,23 @@ object ColorResolver {
         )
     }
 
-    fun resolveSnake(id: Int): Color {
+    fun resolveSnake(faded: Boolean, id: Int): Color {
         val colorBase = colors[id.absoluteValue % colors.size]
         val offset = ((id.absoluteValue / colors.size) % 10) * 10 * if (id % 2 == 0) -1 else 1
-        return Color(colorBase.red + offset, colorBase.green + offset, colorBase.blue + offset)
+        var red = colorBase.red + offset
+        var green = colorBase.green + offset
+        var blue = colorBase.blue + offset
+
+        if (faded && red < 190) {
+            red = 180 + (red % 50)
+        }
+        if (faded && green < 190) {
+            green = 180 + (green % 50)
+        }
+        if (faded && blue < 190) {
+            blue = 180 + (blue % 50)
+        }
+
+        return Color(red, green, blue)
     }
 }

@@ -1,19 +1,18 @@
 package component
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import api.v1.dto.NodeRole
 import api.v1.dto.Player
 import res.Font.snakeIOTypography
 
@@ -21,7 +20,8 @@ import res.Font.snakeIOTypography
 fun Rating(
     modifier: Modifier = Modifier,
     selfName: String,
-    players: Array<Player>
+    players: Array<Player>,
+    expandedInfoEnable: Boolean
 ) {
     Column(modifier) {
         Text("Рейтинг", style = snakeIOTypography.h4)
@@ -34,7 +34,7 @@ fun Rating(
                 modifier = Modifier.padding(4.dp),
                 content = {
                     items(players) { player ->
-                        PlayerRatingItem(player, selfName)
+                        PlayerRatingItem(player, selfName, expandedInfoEnable)
                     }
                 }
             )
@@ -43,7 +43,7 @@ fun Rating(
 }
 
 @Composable
-fun PlayerRatingItem(player: Player, selfName: String) {
+fun PlayerRatingItem(player: Player, selfName: String, expandedInfoEnable: Boolean) {
     val isMe = player.name == selfName
     if (isMe) {
         Card(
@@ -51,13 +51,21 @@ fun PlayerRatingItem(player: Player, selfName: String) {
             elevation = 0.dp,
             shape = RoundedCornerShape(8.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+            Column(
+                Modifier
                     .padding(4.dp)
             ) {
-                Text(player.name, style = snakeIOTypography.h5, modifier = Modifier.align(Alignment.CenterStart))
-                Text(player.score.toString(), style = snakeIOTypography.h5, modifier = Modifier.align(Alignment.CenterEnd))
+                Box(Modifier.fillMaxWidth()) {
+                    Text(player.name, style = snakeIOTypography.h5, modifier = Modifier.align(Alignment.CenterStart))
+                    Text(player.score.toString(), style = snakeIOTypography.h5, modifier = Modifier.align(Alignment.CenterEnd))
+                }
+                if (expandedInfoEnable) {
+                    if (player.role != NodeRole.MASTER) {
+                        Text("${player.ip}:${player.port}")
+                    }
+                    Text("NodeRole: ${player.role}", style = snakeIOTypography.caption)
+                    Text("PlayerType: ${player.type}", style = snakeIOTypography.caption)
+                }
             }
         }
     } else {
