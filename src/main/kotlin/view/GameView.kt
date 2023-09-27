@@ -6,47 +6,52 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import api.v1.dto.NodeRole
+import api.v1.dto.GameState
 import api.v1.dto.Player
-import api.v1.dto.PlayerType
 import component.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import model.GameConfig
+import controller.GameController
+import kotlin.math.absoluteValue
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 @Composable
-fun GameView(gameConfig: GameConfig) {
-    val modifier = Modifier
-        .fillMaxSize()
+fun GameView(gameController: GameController) {
+    val config = gameController.config()
+    val modifier = Modifier.fillMaxSize()
+    val playersState = remember { mutableStateOf(arrayOf<Player>()) }
 
-    val playersState = remember {
-        mutableStateOf(
-            arrayOf(
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 96, "192.154.34.34", "petya", 33),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 21, "192.154.34.34", "petya", 33),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 23, "192.154.34.34", "Petya", 32),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 47, "192.154.34.34", "sonya", 65),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 76, "192.154.34.34", "sonya", 25),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 3, "192.154.34.34", "sonya", 55),
-                Player(300, NodeRole.NORMAL, PlayerType.HUMAN, 31, "192.154.34.34", "dasha", 34),
-            )
-        )
-    }
 
-    val coroutineScope = rememberCoroutineScope()
-    coroutineScope.launch(Dispatchers.IO) {
-        while (true) {
-            Thread.sleep(3000)
-            val list = playersState.value.toMutableList()
-            list.shuffle()
-            playersState.value = list.toTypedArray()
+    val cells = remember { mutableStateOf(mutableMapOf<Int, Color>()) }
+    gameController.setOnGameStateChangeListener { state: GameState ->
+        val cellsTmp = mutableMapOf<Int, Color>()
+        state.snakes.forEach { snake ->
+            snake.points.forEach { coords ->
+                cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(snake.playerId)
+            }
         }
+        state.food.forEach { food ->
+            cellsTmp[config.width * food.y + food.x] = ColorResolver.resolveFood(food.x, food.y)
+        }
+        playersState.value = state.players
+        cells.value.clear()
+        cells.value = cellsTmp
     }
+
+
+//    val coroutineScope = rememberCoroutineScope()
+//    coroutineScope.launch(Dispatchers.IO) {
+//        while (true) {
+//            Thread.sleep(300)
+//            val list = playersState.value.toMutableList()
+//            list.shuffle()
+//            println("dafafa")
+//            playersState.value = list.toTypedArray()
+//        }
+//    }
 
     Row(modifier) {
         // Padding.
@@ -54,66 +59,76 @@ fun GameView(gameConfig: GameConfig) {
 
         // General properties.
         val generalColumnModifier = Modifier.fillMaxHeight()
-        val generalComponentsModifier = Modifier
-            .padding(generalComponentPadding)
+        val generalComponentsModifier = Modifier.padding(generalComponentPadding)
 
         // Column with game information.
-        val gameInfoColumnModifier = generalColumnModifier
-            .weight(.2f)
+        val gameInfoColumnModifier = generalColumnModifier.weight(.2f)
 
         Column(modifier = gameInfoColumnModifier) {
             Logo(generalComponentsModifier)
 
             Column(
-                Modifier.fillMaxHeight(0.9f),
-                verticalArrangement = Arrangement.Center
+                Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
             ) {
                 Rating(
-                    generalComponentsModifier,
-                    gameConfig.playerName,
-                    players = playersState.value
+                    generalComponentsModifier, config.playerName, players = playersState.value
                 )
 
                 Stats(
-                    generalComponentsModifier,
-                    gameConfig.height,
-                    gameConfig.width,
-                    gameConfig.foodStatic,
-                    gameConfig.stateDelayMs
+                    generalComponentsModifier, config.height, config.width, config.foodStatic, config.stateDelayMs
                 )
             }
         }
 
         // Column with game field.
-        val gameFieldColumnModifier = generalColumnModifier
-            .weight(.6f)
-            .background(Color(240, 240, 240))
+        val gameFieldColumnModifier = generalColumnModifier.weight(.6f).background(Color(240, 240, 240))
 
         Column(
             modifier = gameFieldColumnModifier,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            GridField(modifier = generalComponentsModifier, gameConfig)
+            GridField(modifier = generalComponentsModifier, config, cells.value)
         }
 
         // Column with game settings.
-        val gameSettingsColumnModifier = generalColumnModifier
-            .weight(.2f)
+        val gameSettingsColumnModifier = generalColumnModifier.weight(.2f)
         Column(modifier = gameSettingsColumnModifier) {
             GameLeaveButton(
-                generalComponentsModifier,
-                { println("game leave button clicked") }
-            )
+                generalComponentsModifier
+            ) { gameController.leaveGame() }
             Column(
-                Modifier.fillMaxHeight(0.9f),
-                verticalArrangement = Arrangement.Center
+                Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
             ) {
-                GameSettings(
-                    modifier = generalComponentsModifier,
-                    action = { selected, isChecked -> println("$selected, $isChecked") }
-                )
+                GameSettings(modifier = generalComponentsModifier,
+                    action = { selected, isChecked -> println("$selected, $isChecked") })
             }
         }
+    }
+}
+
+object ColorResolver {
+    private val colors = arrayOf(
+        Color.Black,
+        Color.Blue,
+        Color.Red,
+        Color.Cyan,
+        Color.Green,
+        Color.Magenta
+    )
+
+    fun resolveFood(x: Int, y: Int): Color {
+        val random = Random(x * y)
+        return Color(
+            random.nextInt(50..250),
+            random.nextInt(50..250),
+            random.nextInt(50..250)
+        )
+    }
+
+    fun resolveSnake(id: Int): Color {
+        val colorBase = colors[id.absoluteValue % colors.size]
+        val offset = ((id.absoluteValue / colors.size) % 10) * 10 * if (id % 2 == 0) -1 else 1
+        return Color(colorBase.red + offset, colorBase.green + offset, colorBase.blue + offset)
     }
 }

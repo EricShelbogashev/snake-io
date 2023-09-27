@@ -20,7 +20,8 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
-    implementation("ru.nsu.shelbogashev:snake-io-core:1.0-SNAPSHOT")
+//    implementation("ru.nsu.shelbogashev:snake-io-core:1.0-SNAPSHOT")
+    implementation(files("../snake-io-core/build/out/snake-io-core-1.0-SNAPSHOT-all.jar"))
 }
 
 compose.desktop {

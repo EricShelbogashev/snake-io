@@ -2,18 +2,22 @@ package view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import api.v1.dto.*
 import component.GameAnnouncementsList
 import component.GameStartButton
+import component.GameStartDialog
 import component.Logo
+import controller.LobbyController
 import model.GameConfig
 import java.net.InetSocketAddress
 
 @Composable
-fun LobbyView() {
+fun LobbyView(lobbyController: LobbyController) {
     val modifier = Modifier
         .fillMaxSize()
 
@@ -26,6 +30,14 @@ fun LobbyView() {
 //            playersState.value = list.toTypedArray()
 //        }
 //    }
+
+
+    val openDialog = remember { mutableStateOf(false) }
+    if (openDialog.value) {
+        GameStartDialog(openDialog) { config: GameConfig ->
+            lobbyController.newGame(config)
+        }
+    }
 
     Row(modifier) {
         // Padding.
@@ -42,571 +54,24 @@ fun LobbyView() {
 
         Column(modifier = gameInfoColumnModifier) {
             Logo(generalComponentsModifier)
-            GameStartButton(generalComponentsModifier, { println("Начать игру") })
-        }
+            GameStartButton(generalComponentsModifier) {
+                openDialog.value = true
+            }
 
-        // Column with game announcements.
-        val gameAnnouncementsColumnModifier = generalColumnModifier
-            .weight(.8f)
+            // Column with game announcements.
+            val gameAnnouncementsColumnModifier = generalColumnModifier
+                .weight(.8f)
 
-        Column(
-            modifier = gameAnnouncementsColumnModifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            GameAnnouncementsList(
-                modifier = generalComponentsModifier,
-                announcements = getAnnos()
-            )
+            Column(
+                modifier = gameAnnouncementsColumnModifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                GameAnnouncementsList(
+                    modifier = generalComponentsModifier,
+                    announcements = mutableListOf()
+                )
+            }
         }
     }
-}
-
-fun getAnnos(): MutableList<Announcement> {
-    return mutableListOf(
-        Announcement(
-            InetSocketAddress(333),
-            32,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Sample game",
-                        "Petya",
-                        34,
-                        321,
-                        3,
-                        3441
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Sanya",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(36513),
-            323,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Another game",
-                        "Petya",
-                        53,
-                        11, 333,
-                        31
-                    ),
-                    false,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            0,
-                            "192.168.31.353",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.67.32",
-                            "Sanya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                ),
-                Game(
-                    GameConfig(
-                        "Yet another game",
-                        "Polya",
-                        44,
-                        44, 3112,
-                        312
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(333),
-            32,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Sample game",
-                        "Petya",
-                        34,
-                        321,
-                        3,
-                        3441
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Sanya",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(36513),
-            323,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Another game",
-                        "Petya",
-                        53,
-                        11, 333,
-                        31
-                    ),
-                    false,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            0,
-                            "192.168.31.353",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.67.32",
-                            "Sanya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                ),
-                Game(
-                    GameConfig(
-                        "Yet another game",
-                        "Polya",
-                        44,
-                        44, 3112,
-                        312
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(333),
-            32,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Sample game",
-                        "Petya",
-                        34,
-                        321,
-                        3,
-                        3441
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Sanya",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(36513),
-            323,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Another game",
-                        "Petya",
-                        53,
-                        11, 333,
-                        31
-                    ),
-                    false,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            0,
-                            "192.168.31.353",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.67.32",
-                            "Sanya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                ),
-                Game(
-                    GameConfig(
-                        "Yet another game",
-                        "Polya",
-                        44,
-                        44, 3112,
-                        312
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(333),
-            32,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Sample game",
-                        "Petya",
-                        34,
-                        321,
-                        3,
-                        3441
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            341,
-                            "192.168.232.12",
-                            "Sanya",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(36513),
-            323,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Another game",
-                        "Petya",
-                        53,
-                        11, 333,
-                        31
-                    ),
-                    false,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            0,
-                            "192.168.31.353",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.67.32",
-                            "Sanya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                ),
-                Game(
-                    GameConfig(
-                        "Yet another game",
-                        "Polya",
-                        44,
-                        44, 3112,
-                        312
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(36513),
-            323,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Another game",
-                        "Petya",
-                        53,
-                        11, 333,
-                        31
-                    ),
-                    false,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            0,
-                            "192.168.31.353",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.67.32",
-                            "Sanya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                ),
-                Game(
-                    GameConfig(
-                        "Yet another game",
-                        "Polya",
-                        44,
-                        44, 3112,
-                        312
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                )
-            )
-        ),
-        Announcement(
-            InetSocketAddress(36513),
-            323,
-            arrayOf(
-                Game(
-                    GameConfig(
-                        "Another game",
-                        "Petya",
-                        53,
-                        11, 333,
-                        31
-                    ),
-                    false,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            0,
-                            "192.168.31.353",
-                            "Kolya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.NORMAL,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.67.32",
-                            "Sanya",
-                            3423
-                        ),
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                ),
-                Game(
-                    GameConfig(
-                        "Yet another game",
-                        "Polya",
-                        44,
-                        44, 3112,
-                        312
-                    ),
-                    true,
-                    arrayOf(
-                        Player(
-                            33,
-                            NodeRole.MASTER,
-                            PlayerType.HUMAN,
-                            34,
-                            "192.168.13.134",
-                            "Dasha",
-                            3423
-                        )
-                    )
-                )
-            )
-        )
-    )
 }
