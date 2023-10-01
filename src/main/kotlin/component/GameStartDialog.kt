@@ -230,8 +230,8 @@ fun GameStartDialog(
                 }
 
                 newGame(
-                    gameNameText,
                     playerNameText,
+                    gameNameText,
                     GameConfig(width, height, foodStatic, delay)
                 )
             }

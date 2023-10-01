@@ -62,6 +62,7 @@ fun LobbyView(lobbyController: LobbyController) {
             verticalArrangement = Arrangement.Center
         ) {
             GameAnnouncementsList(
+                controller = lobbyController,
                 modifier = generalComponentsModifier,
                 announcements = announcements.value.toList()
             )

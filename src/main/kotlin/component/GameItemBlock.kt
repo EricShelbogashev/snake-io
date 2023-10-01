@@ -17,8 +17,8 @@ fun GameItemBlock(
     modifier: Modifier = Modifier,
     address: InetSocketAddress,
     games: Array<Game>,
-    onView: (address: SocketAddress) -> Unit,
-    onJoin: (address: SocketAddress) -> Unit,
+    onView: (address: InetSocketAddress, gameName: String) -> Unit,
+    onJoin: (address: InetSocketAddress, gameName: String) -> Unit,
     last: Boolean
 ) {
     Card(
@@ -38,7 +38,8 @@ fun GameItemBlock(
                     alive = game.players.size,
                     canJoin = game.canJoin,
                     onView = onView,
-                    onJoin = onJoin
+                    onJoin = onJoin,
+                    name = game.gameName
                 )
             }
         }

@@ -14,10 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import model.LobbyController
 import model.api.v1.dto.Announcement
+import java.util.UUID
+import kotlin.random.Random
 
 @Composable
-fun GameAnnouncementsList(modifier: Modifier, announcements: List<Announcement>) {
+fun GameAnnouncementsList(controller: LobbyController, modifier: Modifier, announcements: List<Announcement>) {
     Card(
         modifier = modifier, elevation = 0.dp, backgroundColor = Color(240, 240, 240), shape = RoundedCornerShape(15.dp)
     ) {
@@ -38,8 +41,8 @@ fun GameAnnouncementsList(modifier: Modifier, announcements: List<Announcement>)
                     GameItemBlock(
                         games = announcement.games,
                         address = announcement.address,
-                        onView = { address -> println(address) },
-                        onJoin = { address -> println(address) },
+                        onView = { address, gameName ->  controller.watchGame(address, "new player ${UUID.randomUUID().toString().subSequence(0, 2)}", gameName) },
+                        onJoin = { address, gameName -> controller.joinGame(address, "new player ${UUID.randomUUID().toString().subSequence(0, 2)}", gameName) },
                         last = index == announcements.size - 1
                     )
                 }

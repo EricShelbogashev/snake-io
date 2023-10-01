@@ -29,8 +29,9 @@ fun GameItem(
     alive: Int,
     canJoin: Boolean,
     background: Color = Color.White,
-    onView: (address: SocketAddress) -> Unit,
-    onJoin: (address: SocketAddress) -> Unit
+    onView: (address: InetSocketAddress, gameName: String) -> Unit,
+    onJoin: (address: InetSocketAddress, gameName: String) -> Unit,
+    name: String
 ) {
     Card(
         modifier = modifier
@@ -89,7 +90,7 @@ fun GameItem(
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
                     IconButton(
-                        onClick = { onView(address) },
+                        onClick = { onView(address, name) },
                         modifier = Modifier.align(Alignment.CenterVertically),
                         enabled = canJoin
                     ) {
@@ -99,7 +100,7 @@ fun GameItem(
                         )
                     }
                     IconButton(
-                        onClick = { onJoin(address) },
+                        onClick = { onJoin(address, name) },
                         modifier = Modifier.align(Alignment.CenterVertically),
                         enabled = canJoin
                     ) {
