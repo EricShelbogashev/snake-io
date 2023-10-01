@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
-import api.v1.dto.Announcement
+import model.api.v1.dto.Announcement
 
 @Composable
 fun GameAnnouncementsList(modifier: Modifier, announcements: List<Announcement>) {
@@ -28,7 +28,7 @@ fun GameAnnouncementsList(modifier: Modifier, announcements: List<Announcement>)
                     Modifier.size(256.dp).align(Alignment.Center),
                     strokeWidth = 32.dp,
                     strokeCap = StrokeCap.Round,
-                    color = Color(225,225,225)
+                    color = Color(225, 225, 225)
                 )
             }
             val state = rememberLazyListState()

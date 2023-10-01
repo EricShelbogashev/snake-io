@@ -7,21 +7,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import api.v1.dto.Direction
-import controller.GameController
+import config.ClientSettings
+import model.GameController
+import model.api.v1.dto.Direction
 import view.GameView
 import view.LobbyView
+import java.net.DatagramSocket
+import java.net.MulticastSocket
+import java.net.NetworkInterface
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() = application {
     val state = remember { mutableStateOf(true) }
     val gameController = remember { mutableStateOf<GameController?>(null) }
-    val client = GameClient(onClientStateChanged = {
-        if (state.value) {
-            gameController.value = null
-        }
-        state.value = !state.value
-    })
+    val client = Client(
+        onStateChanged = {
+            if (state.value) {
+                gameController.value = null
+            }
+            state.value = !state.value
+        },
+        settings = ClientSettings(
+            multicastReceiveSocket = MulticastSocket(ClientSettings.gameGroupAddress()),
+            generalSocket = DatagramSocket(),
+            networkInterface = NetworkInterface.getByName("wlan0")
+        )
+    )
 
     Window(
         onCloseRequest = ::exitApplication,

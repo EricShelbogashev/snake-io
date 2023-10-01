@@ -5,14 +5,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import api.v1.dto.Announcement
-import cache.TimebasedCache
 import component.GameAnnouncementsList
 import component.GameStartButton
 import component.GameStartDialog
 import component.Logo
-import controller.LobbyController
-import model.GameConfig
+import model.LobbyController
+import model.api.v1.dto.Announcement
+import model.api.v1.dto.GameConfig
 
 @Composable
 fun LobbyView(lobbyController: LobbyController) {

@@ -5,20 +5,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import model.GameConfig
+import model.api.v1.dto.GameConfig
 import res.Font
 import java.util.*
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (gameName: String, playerName: String, config: GameConfig) -> Unit) {
+fun GameStartDialog(
+    openDialog: MutableState<Boolean>,
+    newGame: (gameName: String, playerName: String, config: GameConfig) -> Unit
+) {
     // TODO: обработка случая, когда указано лишь одно из ширины и высоты, а остальное по-умолчанию.
     // TODO: обработка случая, когда количество постоянной еды
     //       указано больше, чем возможно, из-за изменения высоты/ширины.

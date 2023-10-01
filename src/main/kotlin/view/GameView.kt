@@ -10,10 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import api.v1.dto.GameState
-import api.v1.dto.Player
 import component.*
-import controller.GameController
+import model.GameController
+import model.api.v1.dto.GameState
+import model.api.v1.dto.Player
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 import kotlin.random.nextInt

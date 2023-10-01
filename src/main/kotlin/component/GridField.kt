@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import model.GameConfig
+import model.api.v1.dto.GameConfig
 import kotlin.random.Random
 import kotlin.random.nextInt
 

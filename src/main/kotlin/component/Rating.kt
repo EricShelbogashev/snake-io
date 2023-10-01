@@ -5,15 +5,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import api.v1.dto.NodeRole
-import api.v1.dto.Player
+import model.api.v1.dto.NodeRole
+import model.api.v1.dto.Player
 import res.Font.snakeIOTypography
 
 @Composable
