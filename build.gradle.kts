@@ -1,8 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    kotlin("jvm")
-    id("org.jetbrains.compose")
+    kotlin("jvm") version "1.9.0"
+    id("org.jetbrains.compose") version "1.5.1"
 }
 
 group = "nsu.shelbogashev"
@@ -22,6 +24,14 @@ dependencies {
     implementation(compose.desktop.currentOs)
 //    implementation("ru.nsu.shelbogashev:snake-io-core:1.0-SNAPSHOT")
     implementation(files("../snake-io-core/build/out/snake-io-core-1.0-SNAPSHOT-all.jar"))
+}
+
+kotlin {
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_1_9)
+        jvmTarget.set(JvmTarget.JVM_17)
+        jvmToolchain(17)
+    }
 }
 
 compose.desktop {

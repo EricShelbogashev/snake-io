@@ -30,7 +30,7 @@ fun GameView(gameController: GameController) {
         val cellsTmp = mutableMapOf<Int, Color>()
         state.snakes.forEach { snake ->
             snake.points.forEach { coords ->
-                cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(fadedColorsEnable.value && config.myPlayerId != snake.playerId, snake.playerId)
+                cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(fadedColorsEnable.value && gameController.currentPlayer().id != snake.playerId, snake.playerId)
             }
         }
         state.food.forEach { food ->
@@ -40,18 +40,6 @@ fun GameView(gameController: GameController) {
         cells.value.clear()
         cells.value = cellsTmp
     }
-
-
-//    val coroutineScope = rememberCoroutineScope()
-//    coroutineScope.launch(Dispatchers.IO) {
-//        while (true) {
-//            Thread.sleep(300)
-//            val list = playersState.value.toMutableList()
-//            list.shuffle()
-//            println("dafafa")
-//            playersState.value = list.toTypedArray()
-//        }
-//    }
 
     Row(modifier) {
         // Padding.
@@ -72,7 +60,7 @@ fun GameView(gameController: GameController) {
                 Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
             ) {
                 Rating(
-                    generalComponentsModifier, config.playerName, players = playersState.value, expandedInfoEnable.value
+                    generalComponentsModifier, gameController.currentPlayer().name, players = playersState.value, expandedInfoEnable.value
                 )
 
                 Stats(

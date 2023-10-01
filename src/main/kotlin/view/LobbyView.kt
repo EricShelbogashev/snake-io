@@ -1,12 +1,12 @@
 package view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import api.v1.dto.Announcement
+import cache.TimebasedCache
 import component.GameAnnouncementsList
 import component.GameStartButton
 import component.GameStartDialog
@@ -19,21 +19,17 @@ fun LobbyView(lobbyController: LobbyController) {
     val modifier = Modifier
         .fillMaxSize()
 
-//    val coroutineScope = rememberCoroutineScope()
-//    coroutineScope.launch(Dispatchers.IO) {
-//        while (true) {
-//            Thread.sleep(3000)
-//            val list = playersState.value.toMutableList()
-//            list.shuffle()
-//            playersState.value = list.toTypedArray()
-//        }
-//    }
-
+    val announcements = remember { mutableStateOf(listOf<Announcement>()) }
+    LaunchedEffect(Unit) {
+        lobbyController.setGameAnnouncementsListener { update: List<Announcement> ->
+            announcements.value = update
+        }
+    }
 
     val openDialog = remember { mutableStateOf(false) }
     if (openDialog.value) {
-        GameStartDialog(openDialog) { config: GameConfig ->
-            lobbyController.newGame(config)
+        GameStartDialog(openDialog) { gameName: String, playerName: String, config: GameConfig ->
+            lobbyController.newGame(gameName, playerName, config)
         }
     }
 
@@ -68,7 +64,7 @@ fun LobbyView(lobbyController: LobbyController) {
         ) {
             GameAnnouncementsList(
                 modifier = generalComponentsModifier,
-                announcements = mutableListOf()
+                announcements = announcements.value.toList()
             )
         }
     }

@@ -22,7 +22,6 @@ import java.net.SocketAddress
 @Composable
 fun GameItem(
     modifier: Modifier = Modifier,
-    username: String,
     address: InetSocketAddress,
     width: Int,
     height: Int,
@@ -47,7 +46,7 @@ fun GameItem(
         Row(Modifier.padding(start = padding, end = padding, top = padding, bottom = padding)) {
             // Username
             Text(
-                text = username,
+                text = "username",
                 modifier = Modifier
                     .weight(0.3f)
                     .align(Alignment.CenterVertically),

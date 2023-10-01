@@ -36,7 +36,6 @@ fun GameItemBlock(
         Column {
             games.forEach { game: Game ->
                 GameItem(
-                    username = game.config.playerName,
                     address = address,
                     width = game.config.width,
                     height = game.config.height,

@@ -18,7 +18,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameConfig) -> Unit) {
+fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (gameName: String, playerName: String, config: GameConfig) -> Unit) {
     // TODO: обработка случая, когда указано лишь одно из ширины и высоты, а остальное по-умолчанию.
     // TODO: обработка случая, когда количество постоянной еды
     //       указано больше, чем возможно, из-за изменения высоты/ширины.
@@ -109,7 +109,7 @@ fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameCon
                         heightText = it
                     }, modifier = itemModifier, placeholder = {
                         Text(
-                            text = GameConfig.Defaults.height().toString(), style = Font.snakeIOTypography.overline
+                            text = 30.toString(), style = Font.snakeIOTypography.overline
                         )
                     }, isError = heightError, textStyle = Font.snakeIOTypography.body1
                     )
@@ -131,7 +131,7 @@ fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameCon
                         widthText = it
                     }, placeholder = {
                         Text(
-                            text = GameConfig.Defaults.width().toString(), style = Font.snakeIOTypography.caption
+                            text = 40.toString(), style = Font.snakeIOTypography.caption
                         )
                     }, modifier = itemModifier, textStyle = Font.snakeIOTypography.body1
                     )
@@ -165,7 +165,7 @@ fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameCon
                         foodStaticText = it
                     }, modifier = itemModifier, placeholder = {
                         Text(
-                            text = GameConfig.Defaults.foodStatic().toString(),
+                            text = 1.toString(),
                             style = Font.snakeIOTypography.caption
                         )
                     }, textStyle = Font.snakeIOTypography.body1
@@ -180,7 +180,7 @@ fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameCon
                         )
                     }, placeholder = {
                         Text(
-                            text = GameConfig.Defaults.stateDelayMs().toString(),
+                            text = 500.toString(),
                             style = Font.snakeIOTypography.caption
                         )
                     }, isError = delayError, value = delayText, onValueChange = {
@@ -208,30 +208,30 @@ fun GameStartDialog(openDialog: MutableState<Boolean>, newGame: (config: GameCon
                     playerNameText = defaultPlayerName
                 }
                 val width = if (widthText.isEmpty()) {
-                    GameConfig.width()
+                    40
                 } else {
                     widthText.trim().toInt()
                 }
                 val height = if (heightText.isEmpty()) {
-                    GameConfig.height()
+                    30
                 } else {
                     heightText.trim().toInt()
                 }
                 val foodStatic = if (foodStaticText.isEmpty()) {
-                    GameConfig.foodStatic()
+                    1
                 } else {
                     foodStaticText.trim().toInt()
                 }
                 val delay = if (delayText.isEmpty()) {
-                    GameConfig.stateDelayMs()
+                    500
                 } else {
                     delayText.trim().toInt()
                 }
 
                 newGame(
-                    GameConfig(
-                        gameNameText, playerNameText, width, height, foodStatic, delay
-                    )
+                    gameNameText,
+                    playerNameText,
+                    GameConfig(width, height, foodStatic, delay)
                 )
             }
         })

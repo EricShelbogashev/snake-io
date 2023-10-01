@@ -1,7 +1,6 @@
 package component
 
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import api.v1.dto.Announcement
 
 @Composable
-fun GameAnnouncementsList(modifier: Modifier, announcements: MutableList<Announcement>) {
+fun GameAnnouncementsList(modifier: Modifier, announcements: List<Announcement>) {
     Card(
         modifier = modifier, elevation = 0.dp, backgroundColor = Color(240, 240, 240), shape = RoundedCornerShape(15.dp)
     ) {
