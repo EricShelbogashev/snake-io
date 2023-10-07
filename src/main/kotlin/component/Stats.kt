@@ -71,4 +71,3 @@ private fun StatChip(icon: GameIcon, label: String, value: String, modifier: Mod
 }
 
 data class StatItem(val icon: GameIcon, val label: String, val value: String)
-

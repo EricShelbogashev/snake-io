@@ -1,6 +1,5 @@
 package component
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -31,10 +30,4 @@ fun Logo(
             style = snakeIOTypography.h3
         )
     }
-}
-
-@Preview
-@Composable
-private fun PreviewLogo() {
-    Logo(Modifier.padding(8.dp))
 }

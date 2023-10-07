@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import model.api.v1.dto.Game
 import java.net.InetSocketAddress
-import java.net.SocketAddress
 
 @Composable
 fun GameItemBlock(

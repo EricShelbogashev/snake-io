@@ -9,7 +9,7 @@ import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.sp
 
 object Font {
-    val montserrat = FontFamily(
+    private val montserrat = FontFamily(
         Font(
             resource = "fonts/montserrat/semibold.ttf",
             weight = FontWeight.SemiBold,

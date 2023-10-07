@@ -16,9 +16,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import model.LobbyController
 import model.api.v1.dto.Announcement
-import java.net.NetworkInterface
-import java.util.UUID
-import kotlin.random.Random
+import java.util.*
 
 @Composable
 fun GameAnnouncementsList(controller: LobbyController, modifier: Modifier, announcements: List<Announcement>) {
@@ -41,8 +39,20 @@ fun GameAnnouncementsList(controller: LobbyController, modifier: Modifier, annou
                     GameItemBlock(
                         games = announcement.games,
                         address = announcement.address,
-                        onView = { address, gameName ->  controller.watchGame(address, "new player ${UUID.randomUUID().toString().subSequence(0, 2)}", gameName) },
-                        onJoin = { address, gameName -> controller.joinGame(address, "new player ${UUID.randomUUID().toString().subSequence(0, 2)}", gameName) },
+                        onView = { address, gameName ->
+                            controller.watchGame(
+                                address,
+                                "new player ${UUID.randomUUID().toString().subSequence(0, 2)}",
+                                gameName
+                            )
+                        },
+                        onJoin = { address, gameName ->
+                            controller.joinGame(
+                                address,
+                                "new player ${UUID.randomUUID().toString().subSequence(0, 2)}",
+                                gameName
+                            )
+                        },
                         last = index == announcements.size - 1
                     )
                 }

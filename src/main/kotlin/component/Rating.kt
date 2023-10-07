@@ -96,3 +96,4 @@ fun PlayerRatingItemTextExpandable(player: Player) {
     Text("NodeRole: ${player.role}", style = snakeIOTypography.caption)
     Text("PlayerType: ${player.type}", style = snakeIOTypography.caption)
 }
+

@@ -1,7 +1,10 @@
 package view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,61 +14,51 @@ import component.GameStartDialog
 import component.Logo
 import model.LobbyController
 import model.api.v1.dto.Announcement
-import model.api.v1.dto.GameConfig
 
 @Composable
 fun LobbyView(lobbyController: LobbyController) {
-    val modifier = Modifier
-        .fillMaxSize()
+    val announcements = remember { mutableStateOf(mutableListOf<Announcement>()) }
+    val openDialog = remember { mutableStateOf(false) }
 
-    val announcements = remember { mutableStateOf(listOf<Announcement>()) }
     LaunchedEffect(Unit) {
         lobbyController.setGameAnnouncementsListener { update: List<Announcement> ->
-            announcements.value = update
+            announcements.value = update.toMutableList()
         }
     }
 
-    val openDialog = remember { mutableStateOf(false) }
-    if (openDialog.value) {
-        GameStartDialog(openDialog) { gameName: String, playerName: String, config: GameConfig ->
-            lobbyController.newGame(gameName, playerName, config)
-        }
-    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row {
+            val generalComponentPadding = 6.dp
+            val generalComponentsModifier = Modifier.padding(generalComponentPadding)
 
-    Row(modifier) {
-        // Padding.
-        val generalComponentPadding = 6.dp
+            val gameInfoColumnModifier = Modifier.fillMaxHeight().weight(.2f)
+            val gameAnnouncementsColumnModifier = Modifier.fillMaxHeight().weight(.8f)
 
-        // General properties.
-        val generalColumnModifier = Modifier.fillMaxHeight()
-        val generalComponentsModifier = Modifier
-            .padding(generalComponentPadding)
+            Column(modifier = gameInfoColumnModifier) {
+                Logo(generalComponentsModifier)
+                GameStartButton(
+                    modifier = generalComponentsModifier,
+                    onClick = { openDialog.value = true }
+                )
+            }
 
-        // Column with game menu.
-        val gameInfoColumnModifier = generalColumnModifier
-            .weight(.2f)
-
-        Column(modifier = gameInfoColumnModifier) {
-            Logo(generalComponentsModifier)
-            GameStartButton(generalComponentsModifier) {
-                openDialog.value = true
+            Column(
+                modifier = gameAnnouncementsColumnModifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                GameAnnouncementsList(
+                    controller = lobbyController,
+                    modifier = generalComponentsModifier,
+                    announcements = announcements.value
+                )
             }
         }
+    }
 
-        // Column with game announcements.
-        val gameAnnouncementsColumnModifier = generalColumnModifier
-            .weight(.8f)
-
-        Column(
-            modifier = gameAnnouncementsColumnModifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            GameAnnouncementsList(
-                controller = lobbyController,
-                modifier = generalComponentsModifier,
-                announcements = announcements.value.toList()
-            )
+    if (openDialog.value) {
+        GameStartDialog(openDialog) { gameName, playerName, config ->
+            lobbyController.newGame(gameName, playerName, config)
         }
     }
 }

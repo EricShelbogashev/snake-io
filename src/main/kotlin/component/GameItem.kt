@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import res.Font
 import res.GameIcon
 import java.net.InetSocketAddress
-import java.net.SocketAddress
 
 @Composable
 fun GameItem(

@@ -5,14 +5,17 @@ import GameOption
 import GameSettings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import component.*
 import kotlinx.coroutines.delay
 import model.GameController
+import model.api.v1.dto.GameConfig
 import model.api.v1.dto.GameState
 import model.api.v1.dto.Player
 
@@ -20,55 +23,30 @@ import model.api.v1.dto.Player
 fun GameView(gameController: GameController) {
     val config = gameController.config()
     val modifier = Modifier.fillMaxSize()
-    val playersState = remember { mutableStateOf(arrayOf<Player>()) }
 
+    val playersState = remember { mutableStateOf(arrayOf<Player>()) }
     val fadedColorsEnable = remember { mutableStateOf(true) }
     val cells = remember { mutableStateOf(mutableMapOf<Int, Color>()) }
+    val expandedInfoEnable = remember { mutableStateOf(false) }
+    var isComponentLoaded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(1000)
+        gameController.currentPlayer().name
+        isComponentLoaded = true
+    }
 
     Row(modifier) {
-        // Padding.
         val generalComponentPadding = 6.dp
-
-        // General properties.
         val generalColumnModifier = Modifier.fillMaxHeight()
         val generalComponentsModifier = Modifier.padding(generalComponentPadding)
 
-        // Column with game information.
-        val gameInfoColumnModifier = generalColumnModifier.weight(.2f)
-        val expandedInfoEnable = remember { mutableStateOf(false) }
-        var isComponentLoaded by remember { mutableStateOf(false) }
-
-        LaunchedEffect(Unit) {
-            delay(1000)
-            gameController.currentPlayer().name
-            isComponentLoaded = true
-        }
         if (isComponentLoaded) {
-
-            Column(modifier = gameInfoColumnModifier) {
-                Logo(generalComponentsModifier)
-
-                Column(
-                    Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
-                ) {
-
-
-                    Rating(
-                        generalComponentsModifier,
-                        gameController.currentPlayer().name,
-                        players = playersState.value,
-                        expandedInfoEnable.value
-                    )
-
-                    Stats(
-                        generalComponentsModifier, config.height, config.width, config.foodStatic, config.stateDelayMs
-                    )
-                }
+            Column(modifier = generalColumnModifier.weight(.2f)) {
+                GameInfoSection(gameController, config, generalComponentsModifier, playersState, expandedInfoEnable)
             }
 
-            // Column with game field.
             val gameFieldColumnModifier = generalColumnModifier.weight(.6f).background(Color(240, 240, 240))
-
             Column(
                 modifier = gameFieldColumnModifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,34 +55,79 @@ fun GameView(gameController: GameController) {
                 GridField(modifier = generalComponentsModifier, config, cells.value)
             }
 
-            // Column with game settings.
             val gameSettingsColumnModifier = generalColumnModifier.weight(.2f)
             Column(modifier = gameSettingsColumnModifier) {
-                GameLeaveButton(
-                    generalComponentsModifier
-                ) { gameController.leaveGame() }
-                Column(
-                    Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
-                ) {
-                    GameSettings(modifier = generalComponentsModifier,
-                        action = { selected, isChecked ->
-                            when (selected) {
-                                GameOption.EXPANDED_INFORMATION_ABOUT_PARTICIPANTS -> {
-                                    expandedInfoEnable.value = isChecked
-                                }
-
-                                GameOption.OPPONENTS_FADED_COLORS -> {
-                                    fadedColorsEnable.value = isChecked
-                                }
-                            }
-                        })
-                }
+                GameSettingsSection(generalComponentsModifier, fadedColorsEnable, expandedInfoEnable, gameController)
             }
         } else {
-            // Выводим заглушку или индикатор загрузки, если компонент ещё не загружен
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    Modifier.size(150.dp),
+                    strokeWidth = 20.dp,
+                    strokeCap = StrokeCap.Round,
+                    color = Color(225, 225, 225)
+                )
+            }
         }
     }
 
+    observeGameState(gameController, config, playersState, fadedColorsEnable, cells)
+}
+
+@Composable
+private fun GameInfoSection(
+    gameController: GameController,
+    config: GameConfig,
+    modifier: Modifier,
+    playersState: MutableState<Array<Player>>,
+    expandedInfoEnable: MutableState<Boolean>
+) {
+    Column(modifier) {
+        Logo(modifier)
+        Column(
+            Modifier.fillMaxHeight(0.9f),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Rating(modifier, gameController.currentPlayer().name, playersState.value, expandedInfoEnable.value)
+            Stats(modifier, config.height, config.width, config.foodStatic, config.stateDelayMs)
+        }
+    }
+}
+
+@Composable
+private fun GameSettingsSection(
+    modifier: Modifier,
+    fadedColorsEnable: MutableState<Boolean>,
+    expandedInfoEnable: MutableState<Boolean>,
+    gameController: GameController
+) {
+    GameLeaveButton(modifier) { gameController.leaveGame() }
+    Column(
+        Modifier.fillMaxHeight(0.9f),
+        verticalArrangement = Arrangement.Center
+    ) {
+        GameSettings(modifier = modifier) { selected, isChecked ->
+            when (selected) {
+                GameOption.EXPANDED_INFORMATION_ABOUT_PARTICIPANTS -> {
+                    expandedInfoEnable.value = isChecked
+                }
+
+                GameOption.OPPONENTS_FADED_COLORS -> {
+                    fadedColorsEnable.value = isChecked
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun observeGameState(
+    gameController: GameController,
+    config: GameConfig,
+    playersState: MutableState<Array<Player>>,
+    fadedColorsEnable: MutableState<Boolean>,
+    cells: MutableState<MutableMap<Int, Color>>
+) {
     remember {
         gameController.setOnGameStateChangeListener { state: GameState ->
             val cellsTmp = mutableMapOf<Int, Color>()
@@ -125,6 +148,7 @@ fun GameView(gameController: GameController) {
         }
     }
 }
+
 
 object ColorResolver {
     fun resolveFood(x: Int, y: Int): Color {
