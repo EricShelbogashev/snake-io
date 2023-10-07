@@ -12,6 +12,8 @@ import model.GameController
 import model.api.v1.dto.Direction
 import model.state.State
 import model.state.impl.LobbyState
+import model.state.impl.MasterMatchState
+import model.state.impl.MatchState
 import view.GameView
 import view.LobbyView
 import java.net.DatagramSocket
@@ -59,11 +61,16 @@ fun main() = application {
         }
     ) {
         if (state.value != null) {
-            if (state.value is LobbyState) {
-                LobbyView(client.lobbyController())
-            } else {
-                GameView(client.gameController())
-                gameController.value = client.gameController()
+            when (state.value) {
+                is LobbyState -> LobbyView(client.lobbyController())
+                is MasterMatchState -> {
+                    GameView(client.gameController())
+                    gameController.value = client.gameController()
+                }
+                is MatchState -> {
+                    GameView(client.gameController())
+                    gameController.value = client.gameController()
+                }
             }
         }
     }

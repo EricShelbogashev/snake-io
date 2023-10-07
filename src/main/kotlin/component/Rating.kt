@@ -1,6 +1,9 @@
 package component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,37 +47,52 @@ fun Rating(
 @Composable
 fun PlayerRatingItem(player: Player, selfName: String, expandedInfoEnable: Boolean) {
     val isMe = player.name == selfName
-    if (isMe) {
-        Card(
-            backgroundColor = Color.LightGray,
-            elevation = 0.dp,
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Column(
-                Modifier
-                    .padding(4.dp)
-            ) {
-                Box(Modifier.fillMaxWidth()) {
-                    Text(player.name, style = snakeIOTypography.h5, modifier = Modifier.align(Alignment.CenterStart))
-                    Text(player.score.toString(), style = snakeIOTypography.h5, modifier = Modifier.align(Alignment.CenterEnd))
-                }
-                if (expandedInfoEnable) {
-                    if (player.role != NodeRole.MASTER) {
-                        Text("${player.ip}:${player.port}")
-                    }
-                    Text("NodeRole: ${player.role}", style = snakeIOTypography.caption)
-                    Text("PlayerType: ${player.type}", style = snakeIOTypography.caption)
-                }
-            }
-        }
+    val backgroundColor = if (isMe) {
+        Color.LightGray
     } else {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
+        Color.Transparent
+    }
+    val textStyle = if (player.role == NodeRole.VIEWER) {
+        snakeIOTypography.h6
+    } else {
+        snakeIOTypography.h5
+    }
+    Card(
+        backgroundColor = backgroundColor,
+        elevation = 0.dp,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            Modifier
                 .padding(4.dp)
         ) {
-            Text(player.name, style = snakeIOTypography.body2, modifier = Modifier.align(Alignment.CenterStart))
-            Text(player.score.toString(), style = snakeIOTypography.body2, modifier = Modifier.align(Alignment.CenterEnd))
+            Box(Modifier.fillMaxWidth()) {
+                Text(player.name, style = textStyle, modifier = Modifier.align(Alignment.CenterStart))
+                if (player.role != NodeRole.VIEWER) {
+                    Text(
+                        player.score.toString(),
+                        style = textStyle,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
+                }
+            }
+            if (expandedInfoEnable) {
+                PlayerRatingItemTextExpandable(player)
+            }
         }
     }
+}
+
+@Composable
+fun PlayerRatingItemTextExpandable(player: Player) {
+    val address = try {
+        player.address
+    } catch (e: Exception) {
+        null
+    }
+    if (address != null) {
+        Text("${player.ip}:${player.port}")
+    }
+    Text("NodeRole: ${player.role}", style = snakeIOTypography.caption)
+    Text("PlayerType: ${player.type}", style = snakeIOTypography.caption)
 }

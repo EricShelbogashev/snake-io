@@ -1,5 +1,6 @@
 package view
 
+import GameOption
 import GameSettings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,9 +15,6 @@ import component.*
 import model.GameController
 import model.api.v1.dto.GameState
 import model.api.v1.dto.Player
-import kotlin.math.absoluteValue
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 @Composable
 fun GameView(gameController: GameController) {
@@ -26,20 +24,6 @@ fun GameView(gameController: GameController) {
 
     val fadedColorsEnable = remember { mutableStateOf(true) }
     val cells = remember { mutableStateOf(mutableMapOf<Int, Color>()) }
-    gameController.setOnGameStateChangeListener { state: GameState ->
-        val cellsTmp = mutableMapOf<Int, Color>()
-        state.snakes.forEach { snake ->
-            snake.points.forEach { coords ->
-                cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(fadedColorsEnable.value && gameController.currentPlayer().id != snake.playerId, snake.playerId)
-            }
-        }
-        state.food.forEach { food ->
-            cellsTmp[config.width * food.y + food.x] = ColorResolver.resolveFood(food.x, food.y)
-        }
-        playersState.value = state.players
-        cells.value.clear()
-        cells.value = cellsTmp
-    }
 
     Row(modifier) {
         // Padding.
@@ -60,7 +44,10 @@ fun GameView(gameController: GameController) {
                 Modifier.fillMaxHeight(0.9f), verticalArrangement = Arrangement.Center
             ) {
                 Rating(
-                    generalComponentsModifier, gameController.currentPlayer().name, players = playersState.value, expandedInfoEnable.value
+                    generalComponentsModifier,
+                    gameController.currentPlayer().name,
+                    players = playersState.value,
+                    expandedInfoEnable.value
                 )
 
                 Stats(
@@ -95,6 +82,7 @@ fun GameView(gameController: GameController) {
                             GameOption.EXPANDED_INFORMATION_ABOUT_PARTICIPANTS -> {
                                 expandedInfoEnable.value = isChecked
                             }
+
                             GameOption.OPPONENTS_FADED_COLORS -> {
                                 fadedColorsEnable.value = isChecked
                             }
@@ -103,44 +91,64 @@ fun GameView(gameController: GameController) {
             }
         }
     }
+
+    remember {
+        gameController.setOnGameStateChangeListener { state: GameState ->
+            val cellsTmp = mutableMapOf<Int, Color>()
+            state.snakes.forEach { snake ->
+                snake.points.forEach { coords ->
+                    cellsTmp[config.width * coords.y + coords.x] = ColorResolver.resolveSnake(
+                        fadedColorsEnable.value && gameController.currentPlayer().id != snake.playerId,
+                        snake.playerId
+                    )
+                }
+            }
+            state.food.forEach { food ->
+                cellsTmp[config.width * food.y + food.x] = ColorResolver.resolveFood(food.x, food.y)
+            }
+            playersState.value = state.players
+            cells.value.clear()
+            cells.value = cellsTmp
+        }
+    }
 }
 
 object ColorResolver {
-    private val colors = arrayOf(
-        Color.Black,
-        Color.Blue,
-        Color.Red,
-        Color.Cyan,
-        Color.Green,
-        Color.Magenta
-    )
-
     fun resolveFood(x: Int, y: Int): Color {
-        val random = Random(x * y)
-        return Color(
-            random.nextInt(50..250),
-            random.nextInt(50..250),
-            random.nextInt(50..250)
-        )
+        return KELLY_COLORS_FOOD[x * y % KELLY_COLORS_FOOD.size]
     }
 
     fun resolveSnake(faded: Boolean, id: Int): Color {
-        val colorBase = colors[id.absoluteValue % colors.size]
-        val offset = ((id.absoluteValue / colors.size) % 10) * 10 * if (id % 2 == 0) -1 else 1
-        var red = colorBase.red + offset
-        var green = colorBase.green + offset
-        var blue = colorBase.blue + offset
-
-        if (faded && red < 190) {
-            red = 180 + (red % 50)
+        var color = KELLY_COLORS_SNAKES[id % KELLY_COLORS_SNAKES.size]
+        val maxVal = Color.White.green
+        if (faded) {
+            color = Color(
+                (color.red + maxVal) / 2,
+                (color.green + maxVal) / 2,
+                (color.blue + maxVal) / 2,
+                1f,
+            )
         }
-        if (faded && green < 190) {
-            green = 180 + (green % 50)
-        }
-        if (faded && blue < 190) {
-            blue = 180 + (blue % 50)
-        }
-
-        return Color(red, green, blue)
+        return color
     }
+
+    private val KELLY_COLORS_SNAKES = arrayOf(
+        Colors.Red,
+        Colors.Pink,
+        Colors.Purple,
+        Colors.Indigo,
+        Colors.Blue,
+        Colors.Cyan,
+        Colors.Teal,
+        Colors.Green,
+        Colors.Lime,
+        Colors.Brown,
+        Colors.Grey
+    )
+
+    private val KELLY_COLORS_FOOD = arrayOf(
+        Colors.Amber,
+        Colors.Orange,
+        Colors.Yellow,
+    )
 }

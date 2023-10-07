@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import model.LobbyController
 import model.api.v1.dto.Announcement
+import java.net.NetworkInterface
 import java.util.UUID
 import kotlin.random.Random
 
@@ -24,7 +25,6 @@ fun GameAnnouncementsList(controller: LobbyController, modifier: Modifier, annou
     Card(
         modifier = modifier, elevation = 0.dp, backgroundColor = Color(240, 240, 240), shape = RoundedCornerShape(15.dp)
     ) {
-
         Box {
             if (announcements.isEmpty()) {
                 CircularProgressIndicator(
